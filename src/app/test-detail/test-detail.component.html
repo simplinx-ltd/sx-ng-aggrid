@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="jumbotron">
+    <h3>Details</h3>
+    <hr/>
+
+    <!-- User Messages -->
+    <div *ngIf="userErrorMessage" class="alert alert-danger" role="alert">
+      {{userErrorMessage}}
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <form [formGroup]="fForm" novalidate (ngSubmit)="onSubmit(fForm)">
+
+          <!-- Form Elements -->
+          <div class="form-group">
+            <label>Name</label>
+            <input class="form-control" formControlName="name">
+            <div *ngIf="fForm.controls['name'].errors?.required">
+              <small class="form-text text-danger">Required</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Comment</label>
+            <input class="form-control" formControlName="comment">
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select required formControlName="status" class="form-control">
+              <option *ngFor="let item of this.fieldSelLists['status']" [value]="item.id">{{item.name}}</option>
+            </select>
+            <div *ngIf="fForm.controls['status'].errors?.required">
+              <small class="form-text text-danger">Required</small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Factory</label>
+            <select required formControlName="factoryId" class="form-control">
+              <option *ngFor="let item of this.fieldSelLists['factory']" [value]="item.id">{{item.name}}</option>
+            </select>
+            <div *ngIf="fForm.controls['factoryId'].errors?.required">
+              <small class="form-text text-danger">Required</small>
+            </div>
+          </div>
+
+          <!-- Form Controls -->
+          <hr/>
+          <button type="submit" class="btn btn-primary" [disabled]="fForm.invalid">Save</button>&nbsp;&nbsp;
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+
+        </form>
+      </div>
+
+      <!-- Space-->
+      <div class="col-md-2"></div>
+
+      <!-- Audit Info -->
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Created @</label>
+          <input class="form-control" [value]="fieldValues?.createdAt | dateFormat" disabled>
+        </div>
+
+        <div class="form-group">
+          <label>Updated @</label>
+          <input class="form-control" [value]="fieldValues?.updatedAt | dateFormat" disabled>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

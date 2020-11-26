@@ -1,0 +1,19 @@
+@media only screen and (max-width: 767px) {
+    .btn-toolbar > .btn-group.mr-2{
+        width: 100%;
+        margin-right: 0px !important;
+    }
+
+    .count-btn{
+        width: 100%;
+    }
+
+    .pagination{
+        display: grid;
+        padding: 0 15px;
+    }
+
+    .pagination > .btn-group{
+        margin: auto 0px !important;
+    }
+}

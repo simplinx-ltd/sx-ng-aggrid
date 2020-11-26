@@ -1,0 +1,94 @@
+<!-- Grid View -->
+<div *ngIf="!isRowViewMode" style="width: 100%; height: 100%;" class="container-fluid sx-ng-aggrid-main">
+    <div style="width: 100%;min-height:42px" class=" sx-ng-aggrid-toolbar">
+        <div class="row">
+            <div class="col-md-5 mb-1">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group mr-2" role="group">
+                        <button *ngIf="!params?.gridFunctions?.hideView" type="button" class="btn btn-secondary"
+                            (click)="onButtonView()" data-toggle="tooltip" data-placement="top" title="View Record">
+                            <i class="fa fa-search-plus">&nbsp;</i>
+                        </button>
+                        <button *ngIf="params?.gridFunctions?.canAdd" type="button" class="btn btn-secondary"
+                            (click)="onButtonAdd()" data-toggle="tooltip" data-placement="top" title="Add...">
+                            <i class="fa fa-plus">&nbsp;</i>
+                        </button>
+                        <button *ngIf="params?.gridFunctions?.canEdit" type="button" class="btn btn-secondary"
+                            (click)="onButtonEdit()" data-toggle="tooltip" data-placement="top" title="Edit...">
+                            <i class="fa fa-edit">&nbsp;</i>
+                        </button>
+                        <button *ngIf="params?.gridFunctions?.canDelete" type="button" class="btn btn-secondary"
+                            (click)="onButtonDelete()" data-toggle="tooltip" data-placement="top" title="Delete...">
+                            <i class="fa fa-times">&nbsp;</i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" (click)="onButtonExportCSV()"
+                            data-toggle="tooltip" data-placement="top" title="Export">
+                            <i class="fa fa-download">&nbsp;</i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" (click)="onButtonRefresh()"
+                            data-toggle="tooltip" data-placement="top" title="Refresh">
+                            <i class="fa fa-undo">&nbsp;</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 mb-1">
+                <button type="button" class="btn btn-light count-btn" disabled>
+                    <i class="fa fa-database">: {{totalRowCount}}</i>
+                </button>
+            </div>
+            <div class="mb-1" [ngClass]="!params?.doNotUsePagination ? 'col-md-1' : 'col-md-5 ml-auto text-right'">
+                <ng-content select="[extra-buttons]"></ng-content>
+            </div>
+            <div class="col-md-4 mb-1 pagination" *ngIf="!params?.doNotUsePagination">
+                <div class="btn-group ml-auto" role="group">
+                    <button type="button" class="btn btn-secondary" (click)="onButtonBackward()">
+                        <i class="fa fa-backward">&nbsp;</i>
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="onButtonPrevious()">
+                        <i class="fa fa-caret-left">&nbsp;&nbsp;&nbsp;&nbsp;</i>
+                    </button>
+                    <button type="button" class="btn btn-light" disabled>{{' '+currentPageNumber+' / '+totalPageCount+'
+                        '}}</button>
+                    <button type="button" class="btn btn-secondary" (click)="onButtonNext()">
+                        <i class="fa fa-caret-right">&nbsp;&nbsp;&nbsp;&nbsp;</i>
+                    </button>
+                    <button type="button" class="btn btn-secondary" (click)="onButtonForward()">
+                        <i class="fa fa-forward">&nbsp;</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 100%; height: 100%;" class="sx-ng-aggrid-toolbar">
+        <ag-grid-angular #agGrid style="width: 100%; height: 100%;" class="ag-theme-fresh" [rowData]="rowData"
+            [columnDefs]="params?.columnDefs" [gridOptions]="gridOptions"></ag-grid-angular>
+    </div>
+</div>
+
+<!-- Row View -->
+<div *ngIf="isRowViewMode" class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 mb-1">
+            <h3>Details
+                <span class="pull-right">
+                    <button *ngIf="params?.gridFunctions?.canEdit" type="button" class="btn btn-primary"
+                        (click)="onButtonViewEdit()">
+                        &nbsp;&nbsp;
+                        <i class="fa fa-edit"></i>&nbsp;&nbsp;
+                    </button>&nbsp;
+                    <button type="button" class="btn btn-secondary" (click)="onButtonViewCancel()">
+                        &nbsp;&nbsp;
+                        <i class="fa fa-arrow-circle-left"></i>&nbsp;&nbsp;
+                    </button>
+                </span>
+            </h3>
+            <hr style="border-top: 1px solid black;" />
+
+            <div class="form-group" *ngFor="let field of rowViewData">
+                <label>{{field.headerName}}</label>
+                <input class="form-control" [value]="field.value" disabled>
+            </div>
+        </div>
+    </div>
+</div>
