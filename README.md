@@ -1,9 +1,9 @@
 # sx-ng-aggrid
 An ag-grid template for easy usage including sample pages & a sample test-server.
 
-![Sample Grid](https://github.com/simplinx-ltd/sx-ng-aggrid/raw/master/sample-grid.png)
+![Sample Grid](https://raw.githubusercontent.com/simplinx-ltd/sx-ng-aggrid/main/sample-grid.png)
 
-![Sample Detail](https://github.com/simplinx-ltd/sx-ng-aggrid/raw/master/sample-detail.png)
+![Sample Detail](https://raw.githubusercontent.com/simplinx-ltd/sx-ng-aggrid/main/sample-detail.png)
 
 >Frontend : Angular 8 & Ag-grid
 
