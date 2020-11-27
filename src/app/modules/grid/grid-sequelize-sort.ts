@@ -10,7 +10,7 @@ export function gridSortFormatter(initialSortModel: ISortModel[], gridSortModel:
         sortModel = gridSortModel;
     }
     if (!sortModel || !Array.isArray(sortModel)) {
-        return undefined;
+        return null;
     }
 
     // tslint:disable-next-line: prefer-for-of
