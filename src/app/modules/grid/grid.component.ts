@@ -130,6 +130,9 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonImportCSV($event: any): void {
+    if (!this.params.gridFunctions.canImport) {
+      return;
+    }
     const files = $event.srcElement.files;
     const reader = new FileReader();
     reader.onload = () => {
@@ -140,10 +143,15 @@ export class GridComponent implements OnInit, OnDestroy {
         skipEmptyLines: true,
         complete: (results) => {
 
-
-        console.log(results.data);
-
-
+            this.http
+            .post(this.params.httpEndpoint + '/createBulk', results)
+            .subscribe(
+              (result) => {
+                this.refresh();
+              },
+              (err) => {
+                alert(this.formatErrorMessage(err));
+              });
       }
       });
     };
@@ -380,7 +388,11 @@ export class GridComponent implements OnInit, OnDestroy {
           let csvData = '"#"'; // First column is row number
           // First Row is labels
           this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-            csvData = `${csvData};"${column.headerName}"`;
+            if(csvData){
+              csvData = `${csvData};"${column.field}"`;
+            } else {
+              csvData = `"${column.field}"`;
+            }
           });
           csvData += '\r\n';
 
