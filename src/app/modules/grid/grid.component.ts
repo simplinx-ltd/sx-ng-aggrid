@@ -381,11 +381,17 @@ export class GridComponent implements OnInit, OnDestroy {
           // Add rows
           for (let i = 0; i < rowData.length; i++) {
             this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
-              csvData = `${csvData};"${value}"`;
+              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], 
+                column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
+              if (i === 0) {
+                csvData = `${csvData}"${value}"`;
+              } else {
+                csvData = `${csvData};"${value}"`;
+              }
             });
             csvData += '\r\n';
           }
+          console.log(csvData);
           downloadCSV(csvData, `Export_Grid`);
         },
         (err) => {
