@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnDestroy, ElementRef } from '@angular/core';
 import { GridOptions } from 'ag-grid';
 import { AgGridNg2, AgGridColumn } from 'ag-grid-angular';
 import { HttpClient } from '@angular/common/http';
@@ -48,6 +48,7 @@ export class GridComponent implements OnInit, OnDestroy {
   @Input() params: GridParams;
 
   @ViewChild('agGrid', { static: false }) agGrid: AgGridNg2;
+  @ViewChild('fileImput', { static: false }) fileImput: ElementRef;
 
   gridSortModel: ISortModel[] = [];
   gridFilterModel: IFilterModel = null;
@@ -123,15 +124,17 @@ export class GridComponent implements OnInit, OnDestroy {
         delimiter: ';',
         skipEmptyLines: true,
         complete: (results) => {
-            this.http
-            .post(this.params.httpEndpoint + '/createBulk', results.data)
-            .subscribe(
-              (result) => {
-                this.refresh();
-              },
-              (err) => {
-                alert(this.formatErrorMessage(err));
-              });
+        this.http
+        .post(this.params.httpEndpoint + '/createBulk', results.data)
+        .subscribe(
+          (result) => {
+            this.fileImput.nativeElement.value = '';
+            this.refresh();
+          },
+          (err) => {
+            this.fileImput.nativeElement.value = '';
+            alert(this.formatErrorMessage(err));
+          });
       }
       });
     };
