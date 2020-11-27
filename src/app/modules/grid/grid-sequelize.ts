@@ -17,6 +17,9 @@ export function gridSequelizeFormatter(
     };
     const where = gridFilterFormatter(staticFilterModel, filterModel);
     const include = gridIncludeFormatter(includeModel, filterModel);
+    if (!params.order){
+        delete params.order;
+    }
     if (where) {
         params.where = where;
     }
