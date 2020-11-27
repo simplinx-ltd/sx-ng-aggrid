@@ -108,25 +108,6 @@ export class GridComponent implements OnInit, OnDestroy {
         this.onButtonEdit();
       }
     };
-
-    const csvData = '"Hello","World!"';
-    const options = {
-        complete: (results, file) => {
-            console.log('Parsed: ', results, file);
-        }
-        // Add your options here
-    };
-
-    
-  }
- 
-  readFile(file: File) {
-    const reader = new FileReader();
-    console.log(file)
-    reader.onload = () => {
-        console.log(reader.result);
-    };
-    reader.readAsText(file);
   }
 
   onButtonImportCSV($event: any): void {
@@ -142,9 +123,8 @@ export class GridComponent implements OnInit, OnDestroy {
         delimiter: ';',
         skipEmptyLines: true,
         complete: (results) => {
-
             this.http
-            .post(this.params.httpEndpoint + '/createBulk', results)
+            .post(this.params.httpEndpoint + '/createBulk', results.data)
             .subscribe(
               (result) => {
                 this.refresh();
@@ -385,8 +365,7 @@ export class GridComponent implements OnInit, OnDestroy {
       .get(this.params.httpEndpoint, { params })
       .subscribe(
         (rowData: any[]) => {
-          let csvData = '"#"'; // First column is row number
-          // First Row is labels
+          let csvData: string;
           this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
             if(csvData){
               csvData = `${csvData};"${column.field}"`;
