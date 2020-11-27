@@ -16,7 +16,8 @@ export class TestComponent implements OnInit {
       editBaseUrl: '/area/edit',
       canAdd: true,
       canDelete: true,
-      canEdit: true
+      canEdit: true,
+      canImport: true
     },
     initialSortModel: [{colId: 'name', sort: 'ASC'}],
     staticFilter: null,

@@ -8,6 +8,7 @@ import { IFilterModel } from './grid-sequelize-filter';
 import { IIncludeModelItem } from './grid-sequelize-include';
 import { gridSequelizeFormatter } from './grid-sequelize';
 import { GridValueFormatter as _GridValueFormatter } from './grid-value-formatter';
+import { Papa } from 'ngx-papaparse';
 
 export enum GridFilterType {
   Text = 'agTextColumnFilter',
@@ -28,6 +29,7 @@ export interface GridParams {
     canAdd: boolean,
     canEdit: boolean,
     canDelete: boolean,
+    canImport?: boolean,
     hideView?: boolean;
   };
   columnDefs: Partial<AgGridColumn>[];
@@ -61,10 +63,13 @@ export class GridComponent implements OnInit, OnDestroy {
   rowViewDataId: number = null;
   rowViewData: { headerName: string, value: any }[] = [];
 
+  csvData: any;
+
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private papa: Papa
 
   ) {
     this.gridOptions = {
@@ -103,6 +108,46 @@ export class GridComponent implements OnInit, OnDestroy {
         this.onButtonEdit();
       }
     };
+
+    const csvData = '"Hello","World!"';
+    const options = {
+        complete: (results, file) => {
+            console.log('Parsed: ', results, file);
+        }
+        // Add your options here
+    };
+
+    
+  }
+ 
+  readFile(file: File) {
+    const reader = new FileReader();
+    console.log(file)
+    reader.onload = () => {
+        console.log(reader.result);
+    };
+    reader.readAsText(file);
+  }
+
+  onButtonImportCSV($event: any): void {
+    const files = $event.srcElement.files;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.csvData = reader.result;
+      this.papa.parse(this.csvData, {
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+        complete: (results) => {
+
+
+        console.log(results.data);
+
+
+      }
+      });
+    };
+    reader.readAsText(files[0]);
   }
 
   ngOnInit() {
