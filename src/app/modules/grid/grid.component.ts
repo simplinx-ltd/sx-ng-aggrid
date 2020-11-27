@@ -36,6 +36,7 @@ export interface GridParams {
   keepUserFilterSort: boolean;
   doNotUsePagination?: boolean;
   idColName?: string;
+  exportFields?: string[];
 }
 
 @Component({
@@ -370,7 +371,11 @@ export class GridComponent implements OnInit, OnDestroy {
         (rowData: any[]) => {
           let csvData: string;
           this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-            if(csvData){
+            if (this.params.exportFields && this.params.exportFields.indexOf(column.field) < 0) {
+              return;
+            }
+
+            if (csvData) {
               csvData = `${csvData};"${column.field}"`;
             } else {
               csvData = `"${column.field}"`;
@@ -380,18 +385,22 @@ export class GridComponent implements OnInit, OnDestroy {
 
           // Add rows
           for (let i = 0; i < rowData.length; i++) {
-            this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i], 
+            for (let j = 0; j < this.gridOptions.columnDefs.length; j++) {
+              const column: AgGridColumn = this.gridOptions.columnDefs[j] as any;
+              if (this.params.exportFields && this.params.exportFields.indexOf(column.field) < 0) {
+                continue;
+              }
+
+              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i],
                 column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
-              if (i === 0) {
+              if (j === 0) {
                 csvData = `${csvData}"${value}"`;
               } else {
                 csvData = `${csvData};"${value}"`;
               }
-            });
+            }
             csvData += '\r\n';
           }
-          console.log(csvData);
           downloadCSV(csvData, `Export_Grid`);
         },
         (err) => {
