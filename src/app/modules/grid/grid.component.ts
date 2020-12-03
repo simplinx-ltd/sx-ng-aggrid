@@ -112,36 +112,6 @@ export class GridComponent implements OnInit, OnDestroy {
     };
   }
 
-  onButtonImportCSV($event: any): void {
-    if (!this.params.gridFunctions.canImport) {
-      return;
-    }
-    const files = $event.srcElement.files;
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.csvData = reader.result;
-      this.papa.parse(this.csvData, {
-        header: true,
-        delimiter: ';',
-        skipEmptyLines: true,
-        complete: (results) => {
-        this.http
-        .post(this.params.httpEndpoint + '/createBulk', results.data)
-        .subscribe(
-          (result) => {
-            this.fileImput.nativeElement.value = '';
-            this.refresh();
-          },
-          (err) => {
-            this.fileImput.nativeElement.value = '';
-            alert(this.formatErrorMessage(err));
-          });
-      }
-      });
-    };
-    reader.readAsText(files[0]);
-  }
-
   ngOnInit() {
     if (this.params.doNotUsePagination) {
       this.pageRowCount = Number.MAX_SAFE_INTEGER;
@@ -354,6 +324,36 @@ export class GridComponent implements OnInit, OnDestroy {
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${this.rowViewDataId}`], { queryParams: { returnUrl: this.router.url } });
   }
 
+  onButtonImportCSV($event: any): void {
+    if (!this.params.gridFunctions.canImport) {
+      return;
+    }
+    const files = $event.srcElement.files;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.csvData = reader.result;
+      this.papa.parse(this.csvData, {
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+        complete: (results) => {
+          this.http
+            .post(this.params.httpEndpoint + '/createBulk', results.data)
+            .subscribe(
+              (result) => {
+                this.fileImput.nativeElement.value = '';
+                this.refresh();
+              },
+              (err) => {
+                this.fileImput.nativeElement.value = '';
+                alert(this.formatErrorMessage(err));
+              });
+        }
+      });
+    };
+    reader.readAsText(files[0]);
+  }
+
   onButtonExportCSV() {
     const params = gridSequelizeFormatter(
       this.params.initialSortModel,
@@ -391,12 +391,19 @@ export class GridComponent implements OnInit, OnDestroy {
                 continue;
               }
 
-              const value = column.valueFormatter ? column.valueFormatter({ value: getObjectValueWithDotNotation(rowData[i],
-                column.field) }) : getObjectValueWithDotNotation(rowData[i], column.field);
+              let value = column.valueFormatter ? column.valueFormatter({
+                value: getObjectValueWithDotNotation(rowData[i],
+                  column.field)
+              }) : getObjectValueWithDotNotation(rowData[i], column.field);
+
+              if (typeof value === 'string') {
+                value = value.replace(/\/\r|\n/gi, '');
+              }
+
               if (j === 0) {
-                csvData = `${csvData}"${value}"`;
+                csvData = `${csvData}"${value ? value : ''}"`;
               } else {
-                csvData = `${csvData};"${value}"`;
+                csvData = `${csvData};"${value ? value : ''}"`;
               }
             }
             csvData += '\r\n';

@@ -12,5 +12,12 @@ export const GridValueFormatter = {
          * If Date is not valid return --
          */
         return ' -- ';
+    },
+    noTextIfNull: (params) => {
+        if (!params.value || params.value === 'null' || params.value === null) {
+            return '';
+        } else {
+            return params.value;
+        }
     }
 };
