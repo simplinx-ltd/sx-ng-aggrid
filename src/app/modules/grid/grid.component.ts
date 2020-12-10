@@ -359,7 +359,7 @@ export class GridComponent implements OnInit, OnDestroy {
       this.params.initialSortModel,
       this.params.staticFilter,
       0,
-      1000 * 1000, // Allow max record
+      1000 * 1000 * 1000, // Allow max record
       this.gridSortModel,
       this.gridFilterModel,
       this.params.httpIncludeParam
