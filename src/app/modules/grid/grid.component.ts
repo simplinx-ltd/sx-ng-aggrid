@@ -31,6 +31,7 @@ export interface GridParams {
     canDelete: boolean,
     canImport?: boolean,
     hideView?: boolean;
+    logToConsole?: boolean;
   };
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
@@ -180,11 +181,19 @@ export class GridComponent implements OnInit, OnDestroy {
                 this.gridOptions.api.sizeColumnsToFit();
               },
               (err) => {
-                alert(this.formatErrorMessage(err));
+                if (this.params.gridFunctions.logToConsole) {
+                  console.log(this.formatErrorMessage(err));
+                } else {
+                  alert(this.formatErrorMessage(err));
+                }
               });
         },
         (err) => {
-          alert(this.formatErrorMessage(err));
+          if (this.params.gridFunctions.logToConsole) {
+            console.log(this.formatErrorMessage(err));
+          } else {
+            alert(this.formatErrorMessage(err));
+          }
         });
   }
 
