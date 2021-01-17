@@ -41,3 +41,7 @@
     line-height: 36px;
     cursor: pointer;
 }
+
+.fa-file-archive::before{
+    content: '\f1c6';
+}

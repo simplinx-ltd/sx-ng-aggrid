@@ -423,6 +423,19 @@ export class GridComponent implements OnInit, OnDestroy {
           alert(this.formatErrorMessage(err));
         });
   }
+
+  onButtonExportBigData() {
+    this.http
+      .get(this.params.httpEndpoint + '/export', { observe: 'response', responseType: 'arraybuffer' })
+      .subscribe(
+        (data) => {
+          const fileName = data.headers.get('Content-Filename');
+          downloadGZIP(data.body, fileName);
+        },
+        (err) => {
+          alert(this.formatErrorMessage(err));
+        });
+  }
 }
 
 /**
@@ -450,6 +463,26 @@ function downloadCSV(data: string, filename: string) {
     const retVal = navigator.msSaveBlob(blob, filename + '.csv');
   } else {
     htmlElement.download = filename + '.csv';
+  }
+
+  htmlElement.click();
+}
+
+function downloadGZIP(data: ArrayBuffer, filename: string) {
+  const htmlElement = document.createElement('a');
+  htmlElement.setAttribute('style', 'display:none;');
+  document.body.appendChild(htmlElement);
+
+  const blob = new Blob([data], { type: 'application/gzip' });
+  const url = window.URL.createObjectURL(blob);
+  htmlElement.href = url;
+
+  const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
+
+  if (isIE) {
+    const retVal = navigator.msSaveBlob(blob, filename + '.zip');
+  } else {
+    htmlElement.download = filename + '.zip';
   }
 
   htmlElement.click();

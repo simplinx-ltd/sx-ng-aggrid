@@ -21,15 +21,19 @@
                             (click)="onButtonDelete()" data-toggle="tooltip" data-placement="top" title="Delete...">
                             <i class="fa fa-times">&nbsp;</i>
                         </button>
-                        <button *ngIf="params?.gridFunctions?.canImport" type="button" class="btn btn-secondary import" 
+                        <button *ngIf="params?.gridFunctions?.canImport" type="button" class="btn btn-secondary import"
                             data-toggle="tooltip" data-placement="top" title="Import">
                             <label for="customFile" class="m-0"><i class="fas fa-upload"></i></label>
-                            <input #fileImput type="file" class="custom-file-input d-none" id="customFile" accept=".csv" 
+                            <input #fileImput type="file" class="custom-file-input d-none" id="customFile" accept=".csv"
                                 (change)="onButtonImportCSV($event)">
                         </button>
                         <button type="button" class="btn btn-secondary" (click)="onButtonExportCSV()"
                             data-toggle="tooltip" data-placement="top" title="Export">
                             <i class="fa fa-download">&nbsp;</i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" (click)="onButtonExportBigData()"
+                            data-toggle="tooltip" data-placement="top" title="Export Big Data">
+                            <i class="fas fa-file-archive"></i>
                         </button>
                         <button type="button" class="btn btn-secondary" (click)="onButtonRefresh()"
                             data-toggle="tooltip" data-placement="top" title="Refresh">
