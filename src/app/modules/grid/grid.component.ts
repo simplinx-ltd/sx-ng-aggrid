@@ -32,6 +32,7 @@ export interface GridParams {
     canImport?: boolean,
     hideView?: boolean;
     logToConsole?: boolean;
+    exportFromServerSide?: boolean;
   };
   columnDefs: Partial<AgGridColumn>[];
   keepUserFilterSort: boolean;
@@ -363,78 +364,78 @@ export class GridComponent implements OnInit, OnDestroy {
     reader.readAsText(files[0]);
   }
 
-  onButtonExportCSV() {
-    const params = gridSequelizeFormatter(
-      this.params.initialSortModel,
-      this.params.staticFilter,
-      0,
-      1000 * 1000 * 1000, // Allow max record
-      this.gridSortModel,
-      this.gridFilterModel,
-      this.params.httpIncludeParam
-    );
-
-    this.http
-      .get(this.params.httpEndpoint, { params })
-      .subscribe(
-        (rowData: any[]) => {
-          let csvData: string;
-          this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
-            if (this.params.exportFields && this.params.exportFields.indexOf(column.field) < 0) {
-              return;
-            }
-
-            if (csvData) {
-              csvData = `${csvData};"${column.field}"`;
-            } else {
-              csvData = `"${column.field}"`;
-            }
+  onButtonExport() {
+    if (this.params.gridFunctions.exportFromServerSide) {
+      this.http
+        .get(this.params.httpEndpoint + '/export', { observe: 'response', responseType: 'arraybuffer' })
+        .subscribe(
+          (data) => {
+            const fileName = data.headers.get('Content-Filename');
+            downloadFile(data.body, fileName, 'application/gzip', '.zip');
+          },
+          (err) => {
+            alert(this.formatErrorMessage(err));
           });
-          csvData += '\r\n';
+    } else {
+      const params = gridSequelizeFormatter(
+        this.params.initialSortModel,
+        this.params.staticFilter,
+        0,
+        1000 * 1000 * 1000, // Allow max record
+        this.gridSortModel,
+        this.gridFilterModel,
+        this.params.httpIncludeParam
+      );
 
-          // Add rows
-          for (let i = 0; i < rowData.length; i++) {
-            for (let j = 0; j < this.gridOptions.columnDefs.length; j++) {
-              const column: AgGridColumn = this.gridOptions.columnDefs[j] as any;
+      this.http
+        .get(this.params.httpEndpoint, { params })
+        .subscribe(
+          (rowData: any[]) => {
+            let csvData: string;
+            this.gridOptions.columnDefs.forEach((column: AgGridColumn) => {
               if (this.params.exportFields && this.params.exportFields.indexOf(column.field) < 0) {
-                continue;
+                return;
               }
 
-              let value = column.valueFormatter ? column.valueFormatter({
-                value: getObjectValueWithDotNotation(rowData[i],
-                  column.field)
-              }) : getObjectValueWithDotNotation(rowData[i], column.field);
-
-              if (typeof value === 'string') {
-                value = value.replace(/\/\r|\n/gi, '');
-              }
-
-              if (j === 0) {
-                csvData = `${csvData}"${value ? value : ''}"`;
+              if (csvData) {
+                csvData = `${csvData};"${column.field}"`;
               } else {
-                csvData = `${csvData};"${value ? value : ''}"`;
+                csvData = `"${column.field}"`;
               }
-            }
+            });
             csvData += '\r\n';
-          }
-          downloadCSV(csvData, `Export_Grid`);
-        },
-        (err) => {
-          alert(this.formatErrorMessage(err));
-        });
-  }
 
-  onButtonExportBigData() {
-    this.http
-      .get(this.params.httpEndpoint + '/export', { observe: 'response', responseType: 'arraybuffer' })
-      .subscribe(
-        (data) => {
-          const fileName = data.headers.get('Content-Filename');
-          downloadGZIP(data.body, fileName);
-        },
-        (err) => {
-          alert(this.formatErrorMessage(err));
-        });
+            // Add rows
+            for (let i = 0; i < rowData.length; i++) {
+              for (let j = 0; j < this.gridOptions.columnDefs.length; j++) {
+                const column: AgGridColumn = this.gridOptions.columnDefs[j] as any;
+                if (this.params.exportFields && this.params.exportFields.indexOf(column.field) < 0) {
+                  continue;
+                }
+
+                let value = column.valueFormatter ? column.valueFormatter({
+                  value: getObjectValueWithDotNotation(rowData[i],
+                    column.field)
+                }) : getObjectValueWithDotNotation(rowData[i], column.field);
+
+                if (typeof value === 'string') {
+                  value = value.replace(/\/\r|\n/gi, '');
+                }
+
+                if (j === 0) {
+                  csvData = `${csvData}"${value ? value : ''}"`;
+                } else {
+                  csvData = `${csvData};"${value ? value : ''}"`;
+                }
+              }
+              csvData += '\r\n';
+            }
+            downloadFile(csvData, 'Export_Grid', 'text/csv', '.csv');
+          },
+          (err) => {
+            alert(this.formatErrorMessage(err));
+          });
+    }
   }
 }
 
@@ -448,41 +449,21 @@ function getObjectValueWithDotNotation(object, keys) {
   }, object);
 }
 
-function downloadCSV(data: string, filename: string) {
+function downloadFile(data: string | ArrayBuffer, filename: string, fileType: string, fileExtention: string) {
   const htmlElement = document.createElement('a');
   htmlElement.setAttribute('style', 'display:none;');
   document.body.appendChild(htmlElement);
 
-  const blob = new Blob([data], { type: 'text/csv' });
+  const blob = new Blob([data], { type: fileType });
   const url = window.URL.createObjectURL(blob);
   htmlElement.href = url;
 
   const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
 
   if (isIE) {
-    const retVal = navigator.msSaveBlob(blob, filename + '.csv');
+    const retVal = navigator.msSaveBlob(blob, filename + fileExtention);
   } else {
-    htmlElement.download = filename + '.csv';
-  }
-
-  htmlElement.click();
-}
-
-function downloadGZIP(data: ArrayBuffer, filename: string) {
-  const htmlElement = document.createElement('a');
-  htmlElement.setAttribute('style', 'display:none;');
-  document.body.appendChild(htmlElement);
-
-  const blob = new Blob([data], { type: 'application/gzip' });
-  const url = window.URL.createObjectURL(blob);
-  htmlElement.href = url;
-
-  const isIE = /*@cc_on!@*/false || !!(document as any).documentMode;
-
-  if (isIE) {
-    const retVal = navigator.msSaveBlob(blob, filename + '.zip');
-  } else {
-    htmlElement.download = filename + '.zip';
+    htmlElement.download = filename + fileExtention;
   }
 
   htmlElement.click();

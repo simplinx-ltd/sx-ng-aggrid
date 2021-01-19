@@ -27,13 +27,9 @@
                             <input #fileImput type="file" class="custom-file-input d-none" id="customFile" accept=".csv"
                                 (change)="onButtonImportCSV($event)">
                         </button>
-                        <button type="button" class="btn btn-secondary" (click)="onButtonExportCSV()"
-                            data-toggle="tooltip" data-placement="top" title="Export">
+                        <button type="button" class="btn btn-secondary" (click)="onButtonExport()" data-toggle="tooltip"
+                            data-placement="top" title="Export">
                             <i class="fa fa-download">&nbsp;</i>
-                        </button>
-                        <button type="button" class="btn btn-secondary" (click)="onButtonExportBigData()"
-                            data-toggle="tooltip" data-placement="top" title="Export Big Data">
-                            <i class="fas fa-file-archive"></i>
                         </button>
                         <button type="button" class="btn btn-secondary" (click)="onButtonRefresh()"
                             data-toggle="tooltip" data-placement="top" title="Refresh">
