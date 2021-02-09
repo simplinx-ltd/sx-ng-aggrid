@@ -83,6 +83,8 @@ export class GridComponent implements OnInit, OnDestroy {
       },
       enableServerSideFilter: true,
       enableServerSideSorting: true,
+      enableFilter: true,
+      enableSorting: true,
       enableColResize: true,
       rowSelection: 'single',
       onGridReady: () => {
@@ -117,6 +119,8 @@ export class GridComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.params.doNotUsePagination) {
       this.pageRowCount = Number.MAX_SAFE_INTEGER;
+      this.gridOptions.enableServerSideFilter = false;
+      this.gridOptions.enableServerSideSorting = false;
     }
   }
 
@@ -156,46 +160,72 @@ export class GridComponent implements OnInit, OnDestroy {
       this.gridFilterModel,
       this.params.httpIncludeParam
     );
-    this.http
-      .get(this.params.httpEndpoint + '/count', { params })
-      .subscribe(
-        (count) => {
-          this.totalRowCount = count as number;
-          this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
 
-          // check currentPageNumber & offset
-          if (this.currentPageNumber == 0 && this.totalPageCount > 0) {
+    if (!this.params.doNotUsePagination) {
+      this.http
+        .get(this.params.httpEndpoint + '/count', { params })
+        .subscribe(
+          (count) => {
+            this.totalRowCount = count as number;
+            this.totalPageCount = Math.ceil(this.totalRowCount / this.pageRowCount);
+
+            // check currentPageNumber & offset
+            if (this.currentPageNumber == 0 && this.totalPageCount > 0) {
+              this.currentPageNumber = 1;
+            }
+
+            if (this.currentPageNumber > this.totalPageCount) {
+              this.currentPageNumber = this.totalPageCount;
+              params.offset = this.currentPageNumber > 0 ? (this.currentPageNumber - 1) * this.pageRowCount : 0;
+            }
+
+            this.http
+              .get(this.params.httpEndpoint, { params })
+              .subscribe(
+                (rowData) => {
+                  this.rowData = rowData as any;
+                  this.gridOptions.api.setRowData(this.rowData);
+                  this.gridOptions.api.sizeColumnsToFit();
+                },
+                (err) => {
+                  if (this.params.gridFunctions.logToConsole) {
+                    console.log(this.formatErrorMessage(err));
+                  } else {
+                    alert(this.formatErrorMessage(err));
+                  }
+                });
+          },
+          (err) => {
+            if (this.params.gridFunctions.logToConsole) {
+              console.log(this.formatErrorMessage(err));
+            } else {
+              alert(this.formatErrorMessage(err));
+            }
+          });
+    } else {
+      this.http
+        .get(this.params.httpEndpoint, { params })
+        .subscribe(
+          (rowData: Object[]) => {
+            // Count
+            this.totalRowCount = rowData.length;
+            this.totalPageCount = 1;
+
             this.currentPageNumber = 1;
-          }
+            params.offset = 0;
 
-          if (this.currentPageNumber > this.totalPageCount) {
-            this.currentPageNumber = this.totalPageCount;
-            params.offset = this.currentPageNumber > 0 ? (this.currentPageNumber - 1) * this.pageRowCount : 0;
-          }
-
-          this.http
-            .get(this.params.httpEndpoint, { params })
-            .subscribe(
-              (rowData) => {
-                this.rowData = rowData as any;
-                this.gridOptions.api.setRowData(this.rowData);
-                this.gridOptions.api.sizeColumnsToFit();
-              },
-              (err) => {
-                if (this.params.gridFunctions.logToConsole) {
-                  console.log(this.formatErrorMessage(err));
-                } else {
-                  alert(this.formatErrorMessage(err));
-                }
-              });
-        },
-        (err) => {
-          if (this.params.gridFunctions.logToConsole) {
-            console.log(this.formatErrorMessage(err));
-          } else {
-            alert(this.formatErrorMessage(err));
-          }
-        });
+            this.rowData = rowData;
+            this.gridOptions.api.setRowData(this.rowData);
+            this.gridOptions.api.sizeColumnsToFit();
+          },
+          (err) => {
+            if (this.params.gridFunctions.logToConsole) {
+              console.log(this.formatErrorMessage(err));
+            } else {
+              alert(this.formatErrorMessage(err));
+            }
+          });
+    }
   }
 
   onButtonAdd() {
