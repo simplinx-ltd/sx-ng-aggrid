@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ISortModel } from './grid-sequelize-sort';
 import { IFilterModel } from './grid-sequelize-filter';
-import { IIncludeModelItem } from './grid-sequelize-include';
+import { HttpParamsItem, IIncludeModelItem } from './grid-sequelize-include';
 import { gridSequelizeFormatter } from './grid-sequelize';
 import { GridValueFormatter as _GridValueFormatter } from './grid-value-formatter';
 import { Papa } from 'ngx-papaparse';
@@ -21,6 +21,7 @@ export const GridValueFormatter = _GridValueFormatter;
 export interface GridParams {
   httpEndpoint: string;
   httpIncludeParam: IIncludeModelItem[];
+  httpParams?: HttpParamsItem[];
   initialSortModel: ISortModel[];
   staticFilter: IFilterModel;
   gridFunctions: {
@@ -154,7 +155,8 @@ export class GridComponent implements OnInit, OnDestroy {
       this.pageRowCount,
       this.gridSortModel,
       this.gridFilterModel,
-      this.params.httpIncludeParam
+      this.params.httpIncludeParam,
+      this.params.httpParams
     );
     this.http
       .get(this.params.httpEndpoint + '/count', { params })
@@ -384,7 +386,8 @@ export class GridComponent implements OnInit, OnDestroy {
         1000 * 1000 * 1000, // Allow max record
         this.gridSortModel,
         this.gridFilterModel,
-        this.params.httpIncludeParam
+        this.params.httpIncludeParam,
+        this.params.httpParams
       );
 
       this.http

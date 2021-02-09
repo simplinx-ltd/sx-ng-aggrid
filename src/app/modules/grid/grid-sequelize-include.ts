@@ -6,6 +6,11 @@ export interface IIncludeModelItem {
     where?: any;
 }
 
+export interface HttpParamsItem {
+    name: string;
+    value: any;
+}
+
 export function gridIncludeFormatter(includeModel: IIncludeModelItem[], filterModel: IFilterModel): string {
     if (!includeModel) {
         return null;
