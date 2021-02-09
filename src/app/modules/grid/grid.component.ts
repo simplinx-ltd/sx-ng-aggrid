@@ -104,11 +104,13 @@ export class GridComponent implements OnInit, OnDestroy {
       },
       onSortChanged: () => {
         this.gridSortModel = this.gridOptions.api.getSortModel();
-        this.refresh();
+        if (!this.params.doNotUsePagination)
+          this.refresh();
       },
       onFilterChanged: () => {
         this.gridFilterModel = this.gridOptions.api.getFilterModel();
-        this.refresh();
+        if (!this.params.doNotUsePagination)
+          this.refresh();
       },
       onRowDoubleClicked: (event) => {
         this.onButtonEdit();
