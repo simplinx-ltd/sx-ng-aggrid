@@ -98,6 +98,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
           this.gridOptions.api.setSortModel(this.gridSortModel);
           this.gridOptions.api.setFilterModel(this.gridFilterModel);
+          if (this.params.doNotUsePagination) this.refresh();
         } else {
           this.refresh();
         }
