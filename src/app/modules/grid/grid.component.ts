@@ -28,6 +28,7 @@ export interface GridParams {
     editBaseUrl: string,
     canAdd: boolean,
     canEdit: boolean,
+    canCopy?: boolean,
     canDelete: boolean,
     canImport?: boolean,
     hideView?: boolean;
@@ -253,6 +254,20 @@ export class GridComponent implements OnInit, OnDestroy {
     this.saveLocalStorageData();
     this.router.navigate([`${this.params.gridFunctions.editBaseUrl}/${selRow[this.params.idColName || 'id']}`],
       { queryParams: { returnUrl: this.router.url } });
+  }
+
+  onButtonCopy() {
+    if (!this.params.gridFunctions.canCopy || !this.params.gridFunctions.addBaseUrl) {
+      return this.onButtonView();
+    }
+
+    const selRow = this.gridOptions.api.getSelectedRows()[0];
+    if (!selRow) {
+      return;
+    }
+
+    this.router.navigate([`${this.params.gridFunctions.addBaseUrl}/0`],
+      { queryParams: selRow });
   }
 
   onButtonDelete() {

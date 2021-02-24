@@ -17,6 +17,10 @@
                             (click)="onButtonEdit()" data-toggle="tooltip" data-placement="top" title="Edit...">
                             <i class="fa fa-edit">&nbsp;</i>
                         </button>
+                        <button *ngIf="params?.gridFunctions?.canCopy" type="button" class="btn btn-secondary"
+                            (click)="onButtonCopy()" data-toggle="tooltip" data-placement="top" title="Copy...">
+                            <i class="far fa-copy">&nbsp;</i>
+                        </button>
                         <button *ngIf="params?.gridFunctions?.canDelete" type="button" class="btn btn-secondary"
                             (click)="onButtonDelete()" data-toggle="tooltip" data-placement="top" title="Delete...">
                             <i class="fa fa-times">&nbsp;</i>
