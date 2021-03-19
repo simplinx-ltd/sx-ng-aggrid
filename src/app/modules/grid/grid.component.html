@@ -1,6 +1,6 @@
 <!-- Grid View -->
 <div *ngIf="!isRowViewMode" style="width: 100%; height: 100%;" class="container-fluid sx-ng-aggrid-main">
-    <div style="width: 100%;min-height:42px" class=" sx-ng-aggrid-toolbar">
+    <div style="width: 100%;min-height:42px" class=" sx-ng-aggrid-toolbar" *ngIf="!params?.hideToolbar">
         <div class="row">
             <div class="col-md-5 mb-1">
                 <div class="btn-toolbar" role="toolbar">

@@ -40,6 +40,7 @@ export interface GridParams {
   doNotUsePagination?: boolean;
   idColName?: string;
   exportFields?: string[];
+  hideToolbar?: boolean;
 }
 
 @Component({
