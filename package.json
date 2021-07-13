@@ -1,6 +1,6 @@
 {
   "name": "sx-ng-aggrid",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "Angular Grid Table(ag-grid) Componet ",
   "scripts": {
     "ng": "ng",
