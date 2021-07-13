@@ -4,6 +4,7 @@ export interface IIncludeModelItem {
     model: string;
     attributes?: string[];
     where?: any;
+    as?: string;
 }
 
 export function gridIncludeFormatter(includeModel: IIncludeModelItem[], filterModel: IFilterModel): string {
@@ -22,7 +23,7 @@ export function gridIncludeFormatter(includeModel: IIncludeModelItem[], filterMo
         const modelName = key.substring(0, key.indexOf('.'));
         const fieldName = key.substring(key.indexOf('.') + 1);
         for (let i = 0; i < includeModel.length; i++) {
-            if (modelName === includeModel[i].model) {
+            if (modelName === includeModel[i].model || modelName === includeModel[i].as) {
                 let filter = filterModel[key];
                 includeModelCopy[i].where = JSON.parse(gridFilterFormatter({}, { [fieldName]: filter }));
             }
