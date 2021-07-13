@@ -112,8 +112,11 @@ export class GridComponent implements OnInit, OnDestroy {
       },
       onFilterChanged: () => {
         this.gridFilterModel = this.gridOptions.api.getFilterModel();
-        if (!this.params.doNotUsePagination)
+        if (!this.params.doNotUsePagination) {
           this.refresh();
+        } else {
+          this.totalRowCount = this.gridOptions.api.getDisplayedRowCount();
+        }
       },
       onRowDoubleClicked: (event) => {
         this.onButtonEdit();
@@ -219,7 +222,6 @@ export class GridComponent implements OnInit, OnDestroy {
         .subscribe(
           (rowData: Object[]) => {
             // Count
-            this.totalRowCount = rowData.length;
             this.totalPageCount = 1;
 
             this.currentPageNumber = 1;
@@ -227,6 +229,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
             this.rowData = rowData;
             this.gridOptions.api.setRowData(this.rowData);
+            this.totalRowCount = this.gridOptions.api.getDisplayedRowCount();
             this.gridOptions.api.sizeColumnsToFit();
           },
           (err) => {
