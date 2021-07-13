@@ -156,17 +156,17 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   refresh() {
-    const params = gridSequelizeFormatter(
-      this.params.initialSortModel,
-      this.params.staticFilter,
-      this.currentPageNumber,
-      this.pageRowCount,
-      this.gridSortModel,
-      this.gridFilterModel,
-      this.params.httpIncludeParam
-    );
-
     if (!this.params.doNotUsePagination) {
+      const params = gridSequelizeFormatter(
+        this.params.initialSortModel,
+        this.params.staticFilter,
+        this.params.httpIncludeParam,
+        this.currentPageNumber,
+        this.pageRowCount,
+        this.gridSortModel,
+        this.gridFilterModel
+      );
+
       this.http
         .get(this.params.httpEndpoint + '/count', { params })
         .subscribe(
@@ -208,6 +208,12 @@ export class GridComponent implements OnInit, OnDestroy {
             }
           });
     } else {
+      const params = gridSequelizeFormatter(
+        this.params.initialSortModel,
+        this.params.staticFilter,
+        this.params.httpIncludeParam
+      );
+
       this.http
         .get(this.params.httpEndpoint, { params })
         .subscribe(
@@ -429,11 +435,11 @@ export class GridComponent implements OnInit, OnDestroy {
       const params = gridSequelizeFormatter(
         this.params.initialSortModel,
         this.params.staticFilter,
+        this.params.httpIncludeParam,
         0,
         1000 * 1000 * 1000, // Allow max record
         this.gridSortModel,
         this.gridFilterModel,
-        this.params.httpIncludeParam
       );
 
       this.http

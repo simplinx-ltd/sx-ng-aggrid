@@ -5,11 +5,11 @@ import { IIncludeModelItem, gridIncludeFormatter } from './grid-sequelize-includ
 export function gridSequelizeFormatter(
     initialSortModel: ISortModel[],
     staticFilterModel: IFilterModel,
-    currentPageNumber: number,
-    pageRowCount: number,
-    sortModel: ISortModel[],
-    filterModel: IFilterModel,
-    includeModel: IIncludeModelItem[]): any {
+    includeModel: IIncludeModelItem[],
+    currentPageNumber?: number,
+    pageRowCount?: number,
+    sortModel?: ISortModel[],
+    filterModel?: IFilterModel): any {
     const params: any = {
         offset: currentPageNumber > 0 ? (currentPageNumber - 1) * pageRowCount : 0,
         limit: pageRowCount,
@@ -17,8 +17,11 @@ export function gridSequelizeFormatter(
     };
     const where = gridFilterFormatter(staticFilterModel, filterModel);
     const include = gridIncludeFormatter(includeModel, filterModel);
-    if (!params.order){
+    if (!params.order) {
         delete params.order;
+    }
+    if (!params.limit) {
+        delete params.limit;
     }
     if (where) {
         params.where = where;
