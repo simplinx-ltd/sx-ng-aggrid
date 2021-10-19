@@ -158,7 +158,7 @@ export class GridComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  refresh() {
+  refresh(updateOnPosition?: boolean) {
     if (!this.params.doNotUsePagination) {
       const params = gridSequelizeFormatter(
         this.params.initialSortModel,
@@ -190,9 +190,30 @@ export class GridComponent implements OnInit, OnDestroy {
             this.http
               .get(this.params.httpEndpoint, { params })
               .subscribe(
-                (rowData) => {
-                  this.rowData = rowData as any;
-                  this.gridOptions.api.setRowData(this.rowData);
+                (rowData: Object[]) => {
+                  if (updateOnPosition) {
+                    let displayedRowData = [];
+                    this.gridOptions.api.getModel().forEachNode((row) => {
+                      displayedRowData.push(row);
+                    });
+
+                    if (rowData.length < displayedRowData.length) {
+                      for (let i = rowData.length; i < displayedRowData.length; i++) {
+                        this.gridOptions.api.updateRowData({ remove: [displayedRowData[i].data] });
+                      }
+                    } else if (rowData.length > displayedRowData.length) {
+                      for (let i = displayedRowData.length; i < rowData.length; i++) {
+                        this.gridOptions.api.updateRowData({ add: [rowData[i]] });
+                      }
+                    }
+
+                    rowData.map((data, index) => {
+                      let gridRow = this.gridOptions.api.getRowNode(index.toString());
+                      if (gridRow) gridRow.setData(data);
+                    });
+                  } else {
+                    this.gridOptions.api.setRowData(rowData);
+                  }
                   this.gridOptions.api.sizeColumnsToFit();
                 },
                 (err) => {
@@ -227,8 +248,30 @@ export class GridComponent implements OnInit, OnDestroy {
             this.currentPageNumber = 1;
             params.offset = 0;
 
-            this.rowData = rowData;
-            this.gridOptions.api.setRowData(this.rowData);
+            if (updateOnPosition) {
+              let displayedRowData = [];
+              this.gridOptions.api.getModel().forEachNode((row) => {
+                displayedRowData.push(row);
+              });
+
+              if (rowData.length < displayedRowData.length) {
+                for (let i = rowData.length; i < displayedRowData.length; i++) {
+                  this.gridOptions.api.updateRowData({ remove: [displayedRowData[i].data] });
+                }
+              } else if (rowData.length > displayedRowData.length) {
+                for (let i = displayedRowData.length; i < rowData.length; i++) {
+                  this.gridOptions.api.updateRowData({ add: [rowData[i]] });
+                }
+              }
+
+              rowData.map((data, index) => {
+                let gridRow = this.gridOptions.api.getRowNode(index.toString());
+                if (gridRow) gridRow.setData(data);
+              });
+            } else {
+              this.gridOptions.api.setRowData(rowData);
+            }
+
             this.totalRowCount = this.gridOptions.api.getDisplayedRowCount();
             this.gridOptions.api.sizeColumnsToFit();
           },
@@ -336,7 +379,7 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   onButtonRefresh() {
-    this.refresh();
+    this.refresh(true);
   }
 
   formatErrorMessage(error: any) {
