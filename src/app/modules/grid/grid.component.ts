@@ -211,6 +211,11 @@ export class GridComponent implements OnInit, OnDestroy {
                       let gridRow = this.gridOptions.api.getRowNode(index.toString());
                       if (gridRow) gridRow.setData(data);
                     });
+
+                    // setData filtreleme, sıralama gibi işlemlerdeki değişiklikleri yansıtacak şekilde güncellemiyor. 
+                    // setData ile veri girişi yapıldıktan sonra tablodaki verilerin filtrelenmesini, sıralanmasını güncellemek için eklendi
+                    this.gridOptions.api.refreshClientSideRowModel('filter');
+                    this.gridOptions.api.refreshClientSideRowModel('sort');
                   } else {
                     this.gridOptions.api.setRowData(rowData);
                   }
@@ -268,6 +273,11 @@ export class GridComponent implements OnInit, OnDestroy {
                 let gridRow = this.gridOptions.api.getRowNode(index.toString());
                 if (gridRow) gridRow.setData(data);
               });
+
+              // setData filtreleme, sıralama gibi işlemlerdeki değişiklikleri yansıtacak şekilde güncellemiyor. 
+              // setData ile veri girişi yapıldıktan sonra tablodaki verilerin filtrelenmesini, sıralanmasını güncellemek için eklendi
+              this.gridOptions.api.refreshClientSideRowModel('filter');
+              this.gridOptions.api.refreshClientSideRowModel('sort');
             } else {
               this.gridOptions.api.setRowData(rowData);
             }
