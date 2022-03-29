@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-5 mb-1">
                 <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group mr-2" role="group">
+                    <div class="btn-group mr-2 me-2" role="group">
                         <button *ngIf="!params?.gridFunctions?.hideView" type="button" class="btn btn-secondary"
                             (click)="onButtonView()" data-toggle="tooltip" data-placement="top" title="View Record">
                             <i class="fa fa-search-plus">&nbsp;</i>
@@ -47,11 +47,12 @@
                     <i class="fa fa-database"></i>: {{totalRowCount}}
                 </button>
             </div>
-            <div class="mb-1" [ngClass]="!params?.doNotUsePagination ? 'col-md-1' : 'col-md-5 ml-auto text-right'">
+            <div class="mb-1"
+                [ngClass]="!params?.doNotUsePagination ? 'col-md-1' : 'col-md-5 ms-auto ml-auto text-right'">
                 <ng-content select="[extra-buttons]"></ng-content>
             </div>
             <div class="col-md-4 mb-1 pagination" *ngIf="!params?.doNotUsePagination">
-                <div class="btn-group ml-auto" role="group">
+                <div class="btn-group ms-auto ml-auto" role="group">
                     <button type="button" class="btn btn-secondary" (click)="onButtonBackward()">
                         <i class="fa fa-backward"></i>&nbsp;
                     </button>
@@ -81,7 +82,7 @@
     <div class="row">
         <div class="col-md-8 mb-1">
             <h3>Details
-                <span class="float-right">
+                <span class="float-right float-end">
                     <button *ngIf="params?.gridFunctions?.canEdit" type="button" class="btn btn-primary"
                         (click)="onButtonViewEdit()">
                         &nbsp;&nbsp;
@@ -95,8 +96,8 @@
             </h3>
             <hr style="border-top: 1px solid black;" />
 
-            <div class="form-group" *ngFor="let field of rowViewData">
-                <label>{{field.headerName}}</label>
+            <div class="form-group mb-3" *ngFor="let field of rowViewData">
+                <label class="mb-2">{{field.headerName}}</label>
                 <input class="form-control" [value]="field.value" disabled>
             </div>
         </div>
